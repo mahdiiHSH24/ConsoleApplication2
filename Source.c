@@ -5,6 +5,7 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+//#include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_image.h>
 //#include <allegro5/allegro_audio.h>
 //#include <allegro5/allegro_acodec.h>
@@ -54,102 +55,11 @@ ALLEGRO_BITMAP* bitmap_asker3 = NULL;
 ALLEGRO_BITMAP* bitmap_asker4 = NULL;
 ALLEGRO_BITMAP* bitmap_asklimit = NULL;
 ALLEGRO_BITMAP* bitmap_which = NULL;
-ALLEGRO_BITMAP* bitmap_info = NULL;
-
 
 ALLEGRO_KEYBOARD_STATE ks;
 
 
-void SaveGame() {
 
-	FILE* updateFile;
-
-	updateFile = fopen("Desktop\\LoadMeet", "w");
-
-	fprintf(updateFile, "%d\n", turn);
-
-	fprintf(updateFile, "%d\n", Player11);
-
-	fprintf(updateFile, "%d\n", Player12);
-
-	fprintf(updateFile, "%d\n", Player21);
-
-	fprintf(updateFile, "%d\n", Player22);
-
-	fprintf(updateFile, "%d\n", LimitCard1);
-
-	fprintf(updateFile, "%d\n", CloseCard1);
-
-	fprintf(updateFile, "%d\n", x2Card1);
-
-	fprintf(updateFile, "%d\n", AgainCard1);
-
-	fprintf(updateFile, "%d\n", LimitCard2);
-
-	fprintf(updateFile, "%d\n", CloseCard2);
-
-	fprintf(updateFile, "%d\n", x2Card2);
-
-	fprintf(updateFile, "%d\n", AgainCard2);
-
-	fprintf(updateFile, "%d\n", Corr11);
-
-	fprintf(updateFile, "%d\n", Corr12);
-
-	fprintf(updateFile, "%d\n", Corr21);
-
-	fprintf(updateFile, "%d\n", Corr22);
-
-
-
-	fclose(updateFile);
-
-}
-void LoadGame() {
-
-	FILE* inFile;
-
-	inFile = fopen("Desktop\\LoadMeet", "r");
-
-	fscanf(inFile, "%d\n", &turn);
-
-	fscanf(inFile, "%d\n", &Player11);
-
-	fscanf(inFile, "%d\n", &Player12);
-
-	fscanf(inFile, "%d\n", &Player21);
-
-	fscanf(inFile, "%d\n", &Player22);
-
-	fscanf(inFile, "%d\n", &LimitCard1);
-
-	fscanf(inFile, "%d\n", &CloseCard1);
-
-	fscanf(inFile, "%d\n", &x2Card1);
-
-	fscanf(inFile, "%d\n", &AgainCard1);
-
-	fscanf(inFile, "%d\n", &LimitCard2);
-
-	fscanf(inFile, "%d\n", &CloseCard2);
-
-	fscanf(inFile, "%d\n", &x2Card2);
-
-	fscanf(inFile, "%d\n", &AgainCard2);
-
-	fscanf(inFile, "%d\n", &Corr11);
-
-	fscanf(inFile, "%d\n", &Corr12);
-
-	fscanf(inFile, "%d\n", &Corr21);
-
-	fscanf(inFile, "%d\n", &Corr22);
-
-
-
-	fclose(inFile);
-
-}
 void must_init(bool test, const char* description)
 {
 	if (test) return;
@@ -708,8 +618,6 @@ int main()
 	bitmap_asklimit = al_load_bitmap("limitask.png");
 	bitmap_which = al_load_bitmap("which.png");
 
-	bitmap_info = al_load_bitmap("info.png");
-
 	//checking sources:
 	assert(bitmap_welcome != NULL);
 	assert(bitmap_intro != NULL);
@@ -733,8 +641,6 @@ int main()
 	assert(bitmap_closeask != NULL);
 	assert(bitmap_asklimit != NULL);
 	assert(bitmap_which != NULL);
-	assert(bitmap_info != NULL);
-
 	time_t time1;
 	time1 = time(NULL);
 
@@ -832,15 +738,6 @@ int main()
 				break;
 
 			}
-			if (!strcmp(gamestate, "loadgame")) {//loading game
-				gm_defaults();
-				LoadGame();
-				strcpy(gamestate, "asking");
-			}
-			if (!strcmp(gamestate, "savegame")) {//saving game
-				SaveGame();
-				strcpy(gamestate, "gamemenu");
-			}
 
 			if (al_key_down(&ks, ALLEGRO_KEY_ESCAPE) || !strcmp(gamestate, "closing"))
 				done = true;
@@ -859,22 +756,9 @@ int main()
 			mousey = event.mouse.y;
 		case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
 			if (event.mouse.button & 1 && !strcmp(gamestate, "gamemenu") && mousey < 281 && mousey>245 && mousex > 55 && mousex < 285) strcpy(gamestate, "asking");
+		}
 
-			if (event.mouse.button & 1 && (!strcmp(gamestate, "gaming") || !strcmp(gamestate, "asking")) && mousey < 90 && mousey>10 && mousex > 800 && mousex < 900)strcpy(gamestate, "savegame");
-			if (event.mouse.button & 1 && (!strcmp(gamestate, "gamemenu")) && mousey < 345 && mousey>315 && mousex > 53 && mousex < 300)strcpy(gamestate, "loadgame");
-			if (event.mouse.button & 1 && (!strcmp(gamestate, "gamemenu")) && mousey < 470 && mousey>440 && mousex > 53 && mousex < 150) {
-				time1 = time(NULL);
-				al_draw_bitmap(bitmap_info, 0, 0, 0);
-				al_flip_display();
-				while (true) {
-					if (time(NULL) - time1 > 6) break;
-				}
-			}
-		}
-		if ((!strcmp(gamestate, "gamemenu") || !strcmp(gamestate, "asking"))) {
-			al_draw_textf(font, al_map_rgb(200, 200, 0), 20, 520, 20, "x= %d    y =%d", mousex, mousey);
-			al_flip_display();
-		}
+
 		if (!strcmp(gamestate, "gamemenu"))//game menu
 		{
 			al_clear_to_color(al_map_rgb(0, 0, 0));
